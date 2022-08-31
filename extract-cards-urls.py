@@ -1,4 +1,5 @@
 import os
+from platform import system
 from time import sleep
 from datetime import datetime
 
@@ -8,11 +9,18 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 import pandas as pd
 
+
 page_domain = 'https://www.vivo.com.br'
 pages_path = [
+    '/para-voce/produtos-e-servicos/combos/combos',
+    '/para-voce/produtos-e-servicos/combos/vivo-total',
     '/para-voce/produtos-e-servicos/para-casa/internet',
     '/para-voce/produtos-e-servicos/para-casa/tv',
+    '/para-voce/produtos-e-servicos/para-casa/telefone-fixo',
     '/para-voce/produtos-e-servicos/para-o-celular/planos-pos-pago',
+    '/para-voce/produtos-e-servicos/para-o-celular/vivo-controle',
+    '/para-voce/produtos-e-servicos/para-o-celular/vivo-easy',
+    '/para-voce/produtos-e-servicos/para-o-celular/pre-pago/vivo-pre',
 ]
 
 application_path = os.path.dirname(__file__)
@@ -20,12 +28,22 @@ today = datetime.now().strftime("%y%m%d_%H%M")
 buttons_info = []
 is_bussolado = False
 
-chromedriver = '/Users/flavio/Documents/dev/chromedriver_mac64/chromedriver'
 options = Options()
 options.add_argument('--incognito')
 options.headless = False
-driver_service = Service(executable_path=chromedriver)
+
+chromedriver = [
+    '/Users/flavio/Documents/dev/chromedriver_mac64/chromedriver',
+    'C:\\Users\\A0100130\\Documents\\chromedriver\\chromedriver.exe',
+]
+
+if system() == 'Windows':
+    driver_service = Service(executable_path=chromedriver[1])
+else:
+    driver_service = Service(executable_path=chromedriver[0])
+
 driver = webdriver.Chrome(service=driver_service, options=options)
+
 
 for page_path in pages_path:
     driver.get(page_domain + page_path)
@@ -59,8 +77,6 @@ for page_path in pages_path:
 
 
 folder_dist = os.path.join(application_path, 'dist')
-# folder_dist_exist = os.path.exists(folder_dist)
-# if not folder_dist_exist:
 os.makedirs(folder_dist, exist_ok=True)
 file_report = os.path.join(folder_dist, f'extract-cards-urls-{today}.csv')
 
